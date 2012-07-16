@@ -10,12 +10,12 @@ import org.junit.Test;
 public class WardenHMacSignerTest {
     
     private WardenHMacSigner defaultSigner;
-    private Map<String, String> params;
+    private Map<String, Object> params;
     
     @Before
     public void setUp() {
         defaultSigner = new WardenHMacSigner();
-        params = new HashMap<String, String>();
+        params = new HashMap<String, Object>();
         params.put("method", "foo");
         params.put("date", "12062012");
         params.put("nonce", "123456");

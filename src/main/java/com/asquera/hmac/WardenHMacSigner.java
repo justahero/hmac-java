@@ -1,11 +1,15 @@
 package com.asquera.hmac;
 
+import org.apache.commons.codec.binary.Hex;
+
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 class WardenHMacSigner {
     
@@ -66,7 +70,7 @@ class WardenHMacSigner {
         return null;
     }
     
-    public String canonicalRepresentation(final Map<String, String> params) throws IllegalArgumentException {
+    public String canonicalRepresentation(final Map<String, Object> params) throws IllegalArgumentException {
         if (params == null) {
             throw new IllegalArgumentException();
         }
@@ -80,17 +84,36 @@ class WardenHMacSigner {
         return result;
     }
     
-    protected String generateSignature(final Map<String, String> params)
-            throws IllegalArgumentException, NoSuchAlgorithmException {
+    public String signUrl(final String url, final String secretKey, final Map<String, Object> options) {
+        if (options.containsKey("query_based")) {
+            options.remove("query_based");
+        }
+        options.put("query_based", new Boolean(true));
+        return "";
+    }
+    
+    protected String generateSignature(final Map<String, Object> params)
+            throws IllegalArgumentException, NoSuchAlgorithmException, InvalidKeyException {
         if (params == null || !params.containsKey("secret")) {
             throw new IllegalArgumentException();
         }
-        Map<String, String> inputParams = new HashMap<String, String>(params);
-        String secret = params.get("secret");
+        
+        Map<String, Object> inputParams = new HashMap<String, Object>(params);
+        String secret = (String)params.get("secret");
         inputParams.remove("secret");
         
+        return hash_hmac(canonicalRepresentation(inputParams), secret);
+    }
+    
+    private String hash_hmac(final String message, final String secretKey) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = getMacAlgorithm(this.algorithm);
-        return null;
+        byte[] keyBytes = secretKey.getBytes();
+        SecretKeySpec keySpec = new SecretKeySpec(keyBytes, mac.getAlgorithm());
+        mac.init(keySpec);
+        
+        // the same as OpenSSL::HMAC.hexDigest
+        byte[] rawHmac = mac.doFinal(message.getBytes());
+        return Hex.encodeHexString(rawHmac);
     }
     
     private static Mac getMacAlgorithm(final String algorithm) throws NoSuchAlgorithmException {

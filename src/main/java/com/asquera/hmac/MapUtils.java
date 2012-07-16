@@ -1,5 +1,6 @@
 package com.asquera.hmac;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MapUtils {
@@ -12,8 +13,8 @@ public class MapUtils {
      * @return
      */
     public static Map<String, Object> mergeMaps(final Map<String, Object> leftMap, final Map<String, Object> rightMap) {
-        if (leftMap.isEmpty())
-            return rightMap;
-        return leftMap;
+        Map<String, Object> result = new HashMap<String, Object>(leftMap);
+        result.putAll(rightMap);
+        return result;
     }
 }

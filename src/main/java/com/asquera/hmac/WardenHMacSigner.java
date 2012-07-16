@@ -6,17 +6,28 @@ import java.util.Map;
 
 class WardenHMacSigner {
     
-    private final String algorithm;
-    private final Map<String, Object> options;
-    private static final Map<String, Object> defaultOptions = createDefaultMap();
+    private final Map<String, Object> defaultOptions;
     
-    private static Map<String, Object> createDefaultMap() {
+    private final String algorithm;
+    private final String defaultAuthScheme;
+    private final Map<String, Object> options;
+    
+    private static Map<String, Object> createDefaultOptions(final String scheme) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("auth_scheme", "HMAC");
         map.put("auth_param", "auth");
         map.put("auth_header", "Authorization");
         map.put("auth_header_format", "%{auth_scheme} %{signature}");
-        //map.put("nonce_header", interpolateString());
+        
+        Map<String, String> schemeReplacements = new HashMap<String, String>();
+        schemeReplacements.put("scheme", scheme);
+        map.put("nonce_header", Utils.interpolateString("X-%{scheme}-Nonce", schemeReplacements));
+        map.put("alternate_date_header", Utils.interpolateString("X-%{scheme}-Date", schemeReplacements));
+        
+        map.put("query_based", new Boolean(true));
+        map.put("use_alternate_date_header", new Boolean(false));
+        map.put("extra_auth_paths", new HashMap<String, Object>());
+        
         return Collections.unmodifiableMap(map);
     }
     
@@ -29,8 +40,13 @@ class WardenHMacSigner {
     }
     
     public WardenHMacSigner(final String algorithm, final Map<String, Object> options) {
+        this.defaultAuthScheme = options.containsKey("auth_scheme") && options.get("auth_scheme") instanceof String 
+                ? (String)options.get("auth_scheme")
+                : "HMAC";
+        this.defaultOptions = createDefaultOptions(defaultAuthScheme);
         this.algorithm = algorithm;
         this.options = new HashMap<String, Object>(defaultOptions);
         this.options.putAll(options);
     }
+    
 }

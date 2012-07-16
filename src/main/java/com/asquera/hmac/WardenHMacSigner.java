@@ -1,7 +1,7 @@
 package com.asquera.hmac;
 
-import org.apache.commons.codec.binary.Hex;
-
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Hex;
 
 class WardenHMacSigner {
     
@@ -66,10 +68,6 @@ class WardenHMacSigner {
         this.options.putAll(options);
     }
     
-    public String signRequest(final String url, final String secret, final Map<String, Object> options) {
-        return null;
-    }
-    
     public String canonicalRepresentation(final Map<String, Object> params) throws IllegalArgumentException {
         if (params == null) {
             throw new IllegalArgumentException();
@@ -84,11 +82,23 @@ class WardenHMacSigner {
         return result;
     }
     
+    public String signRequest(final String url, final String secret, final Map<String, Object> inputOptions)
+            throws MalformedURLException, URISyntaxException {
+        
+        Map<String, Object> options = new HashMap<String, Object>(this.defaultOptions);
+        options.putAll(inputOptions);
+        
+        Map<String, Object> queryStrings = Utils.getQueryStringAsMap(url);
+        
+        return "";
+    }
+    
     public String signUrl(final String url, final String secretKey, final Map<String, Object> options) {
         if (options.containsKey("query_based")) {
             options.remove("query_based");
         }
         options.put("query_based", new Boolean(true));
+        
         return "";
     }
     

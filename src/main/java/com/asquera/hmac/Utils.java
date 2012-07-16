@@ -1,5 +1,12 @@
 package com.asquera.hmac;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.util.EncodingUtils;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 public class Utils {
@@ -37,4 +44,16 @@ public class Utils {
         
         return result;
     }
+    
+    public static Map<String, Object> getQueryStringAsMap(final String url) throws URISyntaxException {
+        URI uri = new URI(url);
+        List<NameValuePair> queries = URLEncodedUtils.parse(uri, "UTF-8");
+        
+        return getMapFromList(queries);
+    }
+    
+    private static Map<String, Object> getMapFromList(final List<NameValuePair> list) {
+        return null;
+    }
+    
 }

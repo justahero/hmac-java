@@ -38,6 +38,7 @@ public class RequestInfo {
     private final Date date;
     private final String nonce;
     private final String path;
+    private final Boolean queryBased;
     
     public RequestInfo(final String url, final Map<String, Object> options) throws URISyntaxException {
         if (url == null)
@@ -47,12 +48,13 @@ public class RequestInfo {
         
         URI uri = new URI(url);
         
-        query   = parseQueryStrings(uri);
-        headers = parseHeaders(options);
-        date    = parseDate(options);
-        method  = parseMethod(options);
-        nonce   = "";
-        path    = uri.getPath();
+        query      = parseQueryStrings(uri);
+        headers    = parseHeaders(options);
+        date       = parseDate(options);
+        method     = parseMethod(options);
+        nonce      = "";
+        path       = uri.getPath();
+        queryBased = parseIsQueryBased(options);
     }
     
     public String canonicalRepresentation() {
@@ -92,6 +94,10 @@ public class RequestInfo {
         return this.query;
     }
     
+    public boolean isQueryBased() {
+        return this.queryBased;
+    }
+    
     private static String parseQueryStrings(URI uri) {
         String encoding = "UTF-8";
         List<NameValuePair> queries = URLEncodedUtils.parse(uri, encoding);
@@ -121,17 +127,17 @@ public class RequestInfo {
     
     private static Date parseDate(Map<String, Object> options) {
         if (options.containsKey("date")) {
-            Object dateOption = options.get("date");
-            if (dateOption instanceof Integer) {
-                return new Date((Integer)dateOption);
-            } else if (dateOption instanceof String) {
+            Object option = options.get("date");
+            if (option instanceof Integer) {
+                return new Date((Integer)option);
+            } else if (option instanceof String) {
                 try {
                     SimpleDateFormat defaultFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
-                    Date date = defaultFormat.parse((String)dateOption);
+                    Date date = defaultFormat.parse((String)option);
                     return date;
                 } catch (ParseException e) {}
-            } else if (dateOption instanceof Date) {
-                return (Date)dateOption;
+            } else if (option instanceof Date) {
+                return (Date)option;
             }
         }
         return new Date();
@@ -143,5 +149,18 @@ public class RequestInfo {
             return method.toUpperCase();
         }
         return "GET";
+    }
+    
+    private static boolean parseIsQueryBased(Map<String, Object> options) {
+        if (options.containsKey("query_based")) {
+            Object option = options.get("query_based");
+            if (option instanceof Boolean) {
+                return (Boolean)option;
+            } else if (option instanceof String) {
+                Boolean queryBased = new Boolean((String)option);
+                return queryBased.booleanValue();
+            }
+        }
+        return false;
     }
 }

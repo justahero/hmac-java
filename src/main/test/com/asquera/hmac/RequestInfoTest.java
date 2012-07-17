@@ -5,10 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.http.NameValuePair;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +39,27 @@ public class RequestInfoTest {
     }
     
     @Test
+    public void pathFromUrlWithoutQuery() throws URISyntaxException {
+        RequestInfo info = new RequestInfo("http://www.example.com", options);
+        String actualPath = info.path();
+        Assert.assertEquals("", actualPath);
+    }
+    
+    @Test
+    public void pathFromUrlWithPath() throws URISyntaxException {
+        RequestInfo info = new RequestInfo("http://www.example.com/images/test.png", options);
+        String actualPath = info.path();
+        Assert.assertEquals("/images/test.png", actualPath);
+    }
+    
+    @Test
+    public void pathFromUrlWithQuery() throws URISyntaxException {
+        RequestInfo info = new RequestInfo("http://www.test.com/blog?key=value&test=true", options);
+        String actualPath = info.path();
+        Assert.assertEquals("/blog", actualPath);
+    }
+    
+    @Test
     public void dateAsStringGetsFormatted() throws Exception {
         options.put("date", "15 01 2012 16:43:21");
         
@@ -59,45 +78,29 @@ public class RequestInfoTest {
         String actualDate = request.date();
         Assert.assertEquals("TUE, 17 07 2012 10:20:30 GMT", actualDate);
     }
-
+    
     @Test
-    public void queryStringsReturnsEmptyMapWithoutQuery() throws Exception {
+    public void queryStringIsEmptyWhenNoQueryGiven() throws URISyntaxException {
         RequestInfo request = new RequestInfo("http://www.example.com", options);
-        List<NameValuePair> queries = request.queries();
-        
-        Assert.assertNotNull(queries);
-        Assert.assertTrue(queries.isEmpty());
+        Assert.assertEquals("", request.sortedQuery());
     }
-
+    
     @Test
-    public void queryStringsReturnsSingleEntryFromQuery() throws Exception {
+    public void queryStringReturnsSingleEntryFromQuery() throws URISyntaxException {
         RequestInfo request = new RequestInfo("http://www.example.com/test?key=value", options);
-        List<NameValuePair> queries = request.queries();
-        
-        Assert.assertNotNull(queries);
-        Assert.assertFalse(queries.isEmpty());
-        Assert.assertEquals("key", queries.get(0).getName());
-        Assert.assertEquals("value", queries.get(0).getValue());
+        String actualQuery = request.sortedQuery();
+        Assert.assertEquals("key=value", actualQuery);
     }
-
+    
     @Test
-    public void queryStringsSortsEntries() throws Exception {
+    public void queryStringsSortsEntries() throws URISyntaxException {
         RequestInfo request = new RequestInfo("http://www.example.com/test?value=1&temp=2", options);
-        List<NameValuePair> queries = request.queries();
-        
-        Assert.assertEquals(2, queries.size());
-        Assert.assertEquals("temp", queries.get(0).getName());
-        Assert.assertEquals("value", queries.get(1).getName());
+        Assert.assertEquals("temp=2&value=1", request.sortedQuery());
     }
-
+    
     @Test
     public void queryStringsSortsEntriesWithSameKey() throws Exception {
         RequestInfo request = new RequestInfo("http://www.example.com/test?value=def&value=abc", options);
-        List<NameValuePair> queries = request.queries();
-        
-        Assert.assertEquals(2, queries.size());
-        Assert.assertEquals("abc", queries.get(0).getValue());
-        Assert.assertEquals("def", queries.get(1).getValue());
+        Assert.assertEquals("value=abc&value=def", request.sortedQuery());
     }
-    
 }

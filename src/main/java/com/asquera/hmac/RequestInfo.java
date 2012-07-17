@@ -1,7 +1,9 @@
 package com.asquera.hmac;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,11 +32,12 @@ public class RequestInfo {
     
     private final static String EOL = System.getProperty("line.separator");
     
-    private final List<NameValuePair> queries;
-    private final List<String> headers;
+    private final String query;
+    private final List<NameValuePair> headers;
     private final String method;
     private final Date date;
     private final String nonce;
+    private final String path;
     
     public RequestInfo(final String url, final Map<String, Object> options) throws URISyntaxException {
         if (url == null)
@@ -42,26 +45,29 @@ public class RequestInfo {
         if (options == null)
             throw new IllegalArgumentException();
         
-        queries = parseQueryStrings(url);
+        URI uri = new URI(url);
+        
+        query   = parseQueryStrings(uri);
         headers = parseHeaders(options);
         date    = parseDate(options);
         method  = parseMethod(options);
         nonce   = "";
+        path    = uri.getPath();
     }
     
     public String canonicalRepresentation() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(method()).append(EOL);
-        buffer.append("date:").append(date()).append(EOL);
-        buffer.append("nonce:").append(nonce()).append(EOL);
-        return buffer.toString();
+        StringBuilder builder = new StringBuilder();
+        builder.append(method()).append(EOL);
+        builder.append("date:").append(date()).append(EOL);
+        builder.append("nonce:").append(nonce()).append(EOL);
+        for (NameValuePair pair : headers) {
+            builder.append(pair.getName().toLowerCase()).append(':').append(pair.getValue()).append(EOL);
+        }
+        builder.append(path()).append(sortedQuery());
+        return builder.toString();
     }
     
-    public final List<NameValuePair> queries() {
-        return this.queries;
-    }
-    
-    public final List<String> headers() {
+    public List<NameValuePair> headers() {
         return this.headers;
     }
     
@@ -78,23 +84,42 @@ public class RequestInfo {
         return this.nonce;
     }
     
-    private static List<NameValuePair> parseQueryStrings(String url) throws URISyntaxException {
-        URI uri = new URI(url);
-        List<NameValuePair> queries = URLEncodedUtils.parse(uri, "UTF-8");
-        Collections.sort(queries, new PairComparator());
-        return queries;
+    public String path() {
+        return this.path;
     }
     
-    private static List<String> parseHeaders(final Map<String, Object> options) {
+    public String sortedQuery() {
+        return this.query;
+    }
+    
+    private static String parseQueryStrings(URI uri) {
+        String encoding = "UTF-8";
+        List<NameValuePair> queries = URLEncodedUtils.parse(uri, encoding);
+        Collections.sort(queries, new PairComparator());
+        
+        try {
+            List<String> parts = new ArrayList<String>();
+            for (NameValuePair pair : queries) {
+                String decodedName  = URLDecoder.decode(pair.getName(), encoding);
+                String decodedValue = URLDecoder.decode(pair.getValue(), encoding);
+                parts.add(String.format("%s=%s", decodedName, decodedValue));
+            }
+            return Utils.join(parts, "&");
+        } catch (UnsupportedEncodingException e) {
+        }
+        return "";
+    }
+    
+    private static List<NameValuePair> parseHeaders(final Map<String, Object> options) {
         if (options.containsKey("headers") && options.get("headers") instanceof List) {
             List<NameValuePair> headers = (List<NameValuePair>)options.get("headers");
             Collections.sort(headers, new PairComparator());
-            return (List<String>)options.get("headers");
+            return (List<NameValuePair>)options.get("headers");
         }
-        return new ArrayList<String>();
+        return new ArrayList<NameValuePair>();
     }
     
-    private Date parseDate(Map<String, Object> options) {
+    private static Date parseDate(Map<String, Object> options) {
         if (options.containsKey("date")) {
             Object dateOption = options.get("date");
             if (dateOption instanceof Integer) {
@@ -112,7 +137,7 @@ public class RequestInfo {
         return new Date();
     }
     
-    private String parseMethod(Map<String, Object> options) {
+    private static String parseMethod(Map<String, Object> options) {
         if (options.containsKey("method") && options.get("method") instanceof String) {
             String method = (String)options.get("method");
             return method.toUpperCase();

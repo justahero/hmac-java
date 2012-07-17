@@ -1,5 +1,7 @@
 package com.asquera.hmac;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 public class Utils {
@@ -36,5 +38,24 @@ public class Utils {
         }
         
         return result;
+    }
+    
+    /**
+     * Joins a collection of strings to a single string, all parts are merged with a delimiter string.
+     * 
+     * @param container
+     * @param delimiter
+     * @return
+     */
+    public static String join(final Collection<String> container, final String delimiter) {
+        StringBuilder builder = new StringBuilder();
+        Iterator<String> it = container.iterator();
+        while (it.hasNext()) {
+            builder.append(it.next());
+            if (!it.hasNext())
+                break;
+            builder.append(delimiter);
+        }
+        return builder.toString();
     }
 }

@@ -56,40 +56,7 @@ public class RequestInfo {
         buffer.append("nonce:").append(nonce()).append(EOL);
         return buffer.toString();
     }
-/*
-    # returns the canonical representation for the given list of parameters
-        $rep .= strtoupper($params["method"]) . "\n";
-        $rep .= "date:".$params["date"]."\n";
-        $rep .= "nonce:".$params["nonce"]."\n";
     
-        if (empty($params["headers"])) {
-            $headers = array();
-        } else {
-            $headers = $params["headers"];
-        }
-        ksort($headers);
-        foreach($headers as $name => $value) {
-            $rep .= strtolower($name).":".$value."\n";
-        }
-        
-        $rep .= $params["path"];
-        
-        if(!empty($params["query"])) {
-            $t = array();
-            $q = $params["query"];
-            ksort($q);
-            
-            foreach($q as $key => $value) {
-                $t[] = urldecode($key)."=".urldecode($value);
-            }
-            
-            $rep .= "?".join($t, "&");
-        }
-        
-        return $rep;
-    }
-*/
-
     public final List<NameValuePair> queries() {
         return this.queries;
     }
@@ -134,7 +101,6 @@ public class RequestInfo {
                 return new Date((Integer)dateOption);
             } else if (dateOption instanceof String) {
                 try {
-                    // 15 01 2012 16:43:21
                     SimpleDateFormat defaultFormat = new SimpleDateFormat("dd MM yyyy HH:mm:ss");
                     Date date = defaultFormat.parse((String)dateOption);
                     return date;

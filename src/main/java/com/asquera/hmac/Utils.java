@@ -1,6 +1,5 @@
 package com.asquera.hmac;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -47,14 +46,13 @@ public class Utils {
      * @param delimiter
      * @return
      */
-    public static String join(final Collection<String> container, final String delimiter) {
+    public static String join(final Iterable<String> container, final String delimiter) {
         StringBuilder builder = new StringBuilder();
         Iterator<String> it = container.iterator();
         while (it.hasNext()) {
             builder.append(it.next());
-            if (!it.hasNext())
-                break;
-            builder.append(delimiter);
+            if (it.hasNext())
+                builder.append(delimiter);
         }
         return builder.toString();
     }

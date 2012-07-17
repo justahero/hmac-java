@@ -1,7 +1,10 @@
 package com.asquera.hmac;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.Mac;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,8 +16,9 @@ public class WardenHMacSignerTest {
     private Map<String, Object> params;
     
     @Before
-    public void setUp() {
-        defaultSigner = new WardenHMacSigner();
+    public void setUp() throws NoSuchAlgorithmException {
+        Mac mac = Mac.getInstance("HmacMD5");
+        defaultSigner = new WardenHMacSigner(mac);
         params = new HashMap<String, Object>();
         params.put("method", "foo");
         params.put("date", "12062012");

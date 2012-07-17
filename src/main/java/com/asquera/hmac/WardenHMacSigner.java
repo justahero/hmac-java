@@ -6,34 +6,23 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.http.NameValuePair;
 
 class WardenHMacSigner {
     
-    private static final Map<String, String> SupportedAlgorithms = getSupportedAlgorithmsMap();
     private static final String[] NecessaryParameters = { "method", "date", "nonce", "headers", "path", "query", };
     
     private final Map<String, Object> defaultOptions;
     
-    private final String algorithm;
+    private final Mac algorithm;
     private final String defaultAuthScheme;
     private final Map<String, Object> options;
     
-    private static Map<String, String> getSupportedAlgorithmsMap() {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("sha1", "HmacSHA1");
-        map.put("md5",  "HmacMD5");
-        return Collections.unmodifiableMap(map);
-    }
-
     private static Map<String, Object> getDefaultOptions(final String scheme) {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("auth_scheme", "HMAC");
@@ -53,15 +42,11 @@ class WardenHMacSigner {
         return Collections.unmodifiableMap(map);
     }
     
-    public WardenHMacSigner() {
-        this("sha1", new HashMap<String, Object>());
-    }
-    
-    public WardenHMacSigner(final String algorithm) {
+    public WardenHMacSigner(final Mac algorithm) {
         this(algorithm, new HashMap<String, Object>());
     }
     
-    public WardenHMacSigner(final String algorithm, final Map<String, Object> options) {
+    public WardenHMacSigner(final Mac algorithm, final Map<String, Object> options) {
         this.defaultAuthScheme = options.containsKey("auth_scheme") && options.get("auth_scheme") instanceof String 
                 ? (String)options.get("auth_scheme")
                 : "HMAC";
@@ -91,7 +76,7 @@ class WardenHMacSigner {
         Map<String, Object> options = new HashMap<String, Object>(this.defaultOptions);
         options.putAll(inputOptions);
         
-        SortedMap<String, String> queryStrings = Utils.getQueryStrings(url);
+        RequestInfo request = new RequestInfo(url, options);
         
         return "";
     }
@@ -119,7 +104,7 @@ class WardenHMacSigner {
     }
     
     private String hash_hmac(final String message, final String secretKey) throws NoSuchAlgorithmException, InvalidKeyException {
-        Mac mac = getMacAlgorithm(this.algorithm);
+        Mac mac = Mac.getInstance(this.algorithm.getAlgorithm());
         byte[] keyBytes = secretKey.getBytes();
         SecretKeySpec keySpec = new SecretKeySpec(keyBytes, mac.getAlgorithm());
         mac.init(keySpec);
@@ -127,13 +112,6 @@ class WardenHMacSigner {
         // the same as OpenSSL::HMAC.hexDigest
         byte[] rawHmac = mac.doFinal(message.getBytes());
         return Hex.encodeHexString(rawHmac);
-    }
-    
-    private static Mac getMacAlgorithm(final String algorithm) throws NoSuchAlgorithmException {
-        if (!SupportedAlgorithms.containsKey(algorithm)) {
-            throw new NoSuchAlgorithmException(algorithm + " algorithm not available");
-        }
-        return Mac.getInstance(SupportedAlgorithms.get(algorithm));
     }
 }
 

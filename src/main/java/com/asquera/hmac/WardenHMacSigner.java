@@ -1,6 +1,5 @@
 package com.asquera.hmac;
 
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -14,8 +13,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Hex;
 
 class WardenHMacSigner {
-    
-    private static final String[] NecessaryParameters = { "method", "date", "nonce", "headers", "path", "query", };
     
     private final Map<String, Object> defaultOptions;
     
@@ -42,6 +39,10 @@ class WardenHMacSigner {
         return Collections.unmodifiableMap(map);
     }
     
+    public WardenHMacSigner() throws NoSuchAlgorithmException {
+        this(Mac.getInstance("HmacSHA1"));
+    }
+    
     public WardenHMacSigner(final Mac algorithm) {
         this(algorithm, new HashMap<String, Object>());
     }
@@ -56,32 +57,19 @@ class WardenHMacSigner {
         this.options.putAll(options);
     }
     
-    public String canonicalRepresentation(final Map<String, Object> params) throws IllegalArgumentException {
-        if (params == null) {
-            throw new IllegalArgumentException();
-        }
-        
-        for (String neededParam : NecessaryParameters) {
-            if (!params.containsKey(neededParam))
-                throw new IllegalArgumentException(neededParam + " must be given!");
-        }
-        
-        String result = "";
-        return result;
-    }
-    
     public String signRequest(final String url, final String secret, final Map<String, Object> inputOptions)
-            throws MalformedURLException, URISyntaxException {
+            throws URISyntaxException, InvalidKeyException, NoSuchAlgorithmException {
         
         Map<String, Object> options = new HashMap<String, Object>(this.defaultOptions);
         options.putAll(inputOptions);
         
         RequestInfo request = new RequestInfo(url, options);
+        String signature = generateSignature(secret, request);
         
         return "";
     }
     
-    public String signUrl(final String url, final String secretKey, final Map<String, Object> options) {
+    public String signUrl(final String url, final String secret, final Map<String, Object> options) {
         if (options.containsKey("query_based")) {
             options.remove("query_based");
         }
@@ -90,17 +78,8 @@ class WardenHMacSigner {
         return "";
     }
     
-    protected String generateSignature(final Map<String, Object> params)
-            throws IllegalArgumentException, NoSuchAlgorithmException, InvalidKeyException {
-        if (params == null || !params.containsKey("secret")) {
-            throw new IllegalArgumentException();
-        }
-        
-        Map<String, Object> inputParams = new HashMap<String, Object>(params);
-        String secret = (String)params.get("secret");
-        inputParams.remove("secret");
-        
-        return hash_hmac(canonicalRepresentation(inputParams), secret);
+    protected String generateSignature(final String secret, final RequestInfo request) throws InvalidKeyException, NoSuchAlgorithmException {
+        return hash_hmac(request.canonicalRepresentation(), secret);
     }
     
     private String hash_hmac(final String message, final String secretKey) throws NoSuchAlgorithmException, InvalidKeyException {

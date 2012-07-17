@@ -1,13 +1,10 @@
 package com.asquera.hmac;
 
-import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
 
-import org.apache.http.NameValuePair;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -71,38 +68,6 @@ public class UtilsTest {
         String result = Utils.interpolateString("X-%{scheme}-Date", replacements);
         Assert.assertNotNull(result);
         Assert.assertEquals("X-HMAC-Date", result);
-    }
-    
-    @Test
-    public void queryStringsReturnsEmptyMapWithoutQuery() throws Exception {
-        List<NameValuePair> queries = Utils.getQueryStrings("http://www.example.com");
-        Assert.assertNotNull(queries);
-        Assert.assertTrue(queries.isEmpty());
-    }
-    
-    @Test
-    public void queryStringsReturnsSingleEntryFromQuery() throws Exception {
-        List<NameValuePair> queries = Utils.getQueryStrings("http://www.example.com/test?key=value");
-        Assert.assertNotNull(queries);
-        Assert.assertFalse(queries.isEmpty());
-        Assert.assertEquals("key", queries.get(0).getName());
-        Assert.assertEquals("value", queries.get(0).getValue());
-    }
-    
-    @Test
-    public void queryStringsSortsEntries() throws Exception {
-        List<NameValuePair> queries = Utils.getQueryStrings("http://www.example.com/test?value=1&temp=2");
-        Assert.assertEquals(2, queries.size());
-        Assert.assertEquals("temp", queries.get(0).getName());
-        Assert.assertEquals("value", queries.get(1).getName());
-    }
-    
-    @Test
-    public void queryStringsSortsEntriesWithSameKey() throws Exception {
-        List<NameValuePair> queries = Utils.getQueryStrings("http://www.example.com/test?value=def&value=abc");
-        Assert.assertEquals(2, queries.size());
-        Assert.assertEquals("abc", queries.get(0).getValue());
-        Assert.assertEquals("def", queries.get(1).getValue());
     }
 
 }

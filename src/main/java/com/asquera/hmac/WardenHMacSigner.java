@@ -6,12 +6,15 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.http.NameValuePair;
 
 class WardenHMacSigner {
     
@@ -88,7 +91,7 @@ class WardenHMacSigner {
         Map<String, Object> options = new HashMap<String, Object>(this.defaultOptions);
         options.putAll(inputOptions);
         
-        Map<String, Object> queryStrings = Utils.getQueryStringAsMap(url);
+        SortedMap<String, String> queryStrings = Utils.getQueryStrings(url);
         
         return "";
     }

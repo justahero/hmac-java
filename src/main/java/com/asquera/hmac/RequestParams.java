@@ -1,8 +1,27 @@
 package com.asquera.hmac;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+/**
+ * Comparator for NameValuePair objects, used for sorting.
+ */
+class PairComparator implements Comparator<NameValuePair> {
+    public int compare(final NameValuePair left, final NameValuePair right) {
+        if (left.getName().equalsIgnoreCase(right.getName())) {
+            return left.getValue().compareToIgnoreCase(right.getValue());
+        }
+        return left.getName().compareToIgnoreCase(right.getName());
+    }
+}
 
 public class RequestParams {
     private Date date = new Date();
@@ -17,7 +36,7 @@ public class RequestParams {
     private boolean isQueryBased = false;
     private boolean useAlternateDateHeader = false;
     
-    private final Map<String, String> headers = new HashMap<String, String>();
+    private final ArrayList<NameValuePair> headers = new ArrayList<NameValuePair>();
     private final Map<String, String> extraAuthParams = new HashMap<String, String>();
     
     public RequestParams() {
@@ -39,16 +58,17 @@ public class RequestParams {
         this.date = date;
     }
     
-    public Map<String, String> headers() {
+    public List<NameValuePair> headers() {
+        Collections.sort(this.headers, new PairComparator());
         return this.headers;
     }
     
     public void addHeader(String name, String value) {
-        this.headers.put(name, value);
+        this.headers.add(new BasicNameValuePair(name, value));
     }
     
-    public void addHeaders(Map<String, String> headers) {
-        this.headers.putAll(headers);
+    public void addHeaders(List<NameValuePair> headers) {
+        this.headers.addAll(headers);
     }
     
     public void clearHeaders() {

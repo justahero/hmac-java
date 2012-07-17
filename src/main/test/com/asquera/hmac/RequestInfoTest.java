@@ -4,8 +4,6 @@ import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,11 +11,11 @@ import org.junit.Test;
 
 public class RequestInfoTest {
     
-    private Map<String, Object> options;
+    private RequestParams options;
     
     @Before
     public void setUp() {
-        options = new HashMap<String, Object>();
+        options = new RequestParams();
     }
     
     @Test
@@ -60,22 +58,14 @@ public class RequestInfoTest {
     }
     
     @Test
-    public void dateAsStringGetsFormatted() throws Exception {
-        options.put("date", "15 01 2012 16:43:21");
-        
-        RequestInfo request = new RequestInfo("http://example.com/test", options);
-        Assert.assertEquals("SUN, 15 01 2012 16:43:21 GMT", request.date());
-    }
-    
-    @Test
     public void dateAsDateGetsFormatted() throws Exception {
         Calendar calendar = new GregorianCalendar();
         calendar.set(2012, 06, 17, 10, 20, 30);
         Date date = calendar.getTime();
-        options.put("date", date);
+        options.setDate(date);
         
         RequestInfo request = new RequestInfo("http://example.com", options);
-        String actualDate = request.date();
+        String actualDate = request.dateAsString();
         Assert.assertEquals("TUE, 17 07 2012 10:20:30 GMT", actualDate);
     }
     
@@ -102,5 +92,25 @@ public class RequestInfoTest {
     public void queryStringsSortsEntriesWithSameKey() throws Exception {
         RequestInfo request = new RequestInfo("http://www.example.com/test?value=def&value=abc", options);
         Assert.assertEquals("value=abc&value=def", request.sortedQuery());
+    }
+    
+    @Test
+    public void isNotQueryBasedWithDefaultOption() throws URISyntaxException {
+        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        Assert.assertFalse(request.isQueryBased());
+    }
+    
+    @Test
+    public void isNotQueryBasedWhenOptionIsFalse() throws URISyntaxException {
+        options.setQueryBased(false);
+        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        Assert.assertFalse(request.isQueryBased());
+    }
+    
+    @Test
+    public void isQueryBasedWhenOptionIsTrue() throws URISyntaxException {
+        options.setQueryBased(true);
+        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        Assert.assertTrue(request.isQueryBased());
     }
 }

@@ -1,9 +1,11 @@
 package com.asquera.hmac;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +57,11 @@ public class RequestParams {
     
     public void setDate(Date date) {
         this.date = date;
+    }
+    
+    public void setDate(int year, int month, int day, int hours, int minutes, int seconds) {
+        Calendar calendar = new GregorianCalendar(year, month, day, hours, minutes, seconds);
+        setDate(calendar.getTime());
     }
     
     public List<NameValuePair> headers() {

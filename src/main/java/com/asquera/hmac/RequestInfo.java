@@ -31,17 +31,20 @@ public class RequestInfo {
     public String canonicalRepresentation() {
         StringBuilder builder = new StringBuilder();
         builder.append(options.method()).append(EOL);
-        builder.append("date:").append(options.date()).append(EOL);
+        builder.append("date:").append(dateAsString()).append(EOL);
         builder.append("nonce:").append(options.nonce()).append(EOL);
         for (NameValuePair pair : options.headers()) {
             builder.append(pair.getName().toLowerCase()).append(':').append(pair.getValue()).append(EOL);
         }
-        builder.append(uri.getPath()).append(query.query());
+        builder.append(path());
+        if (!query.query().isEmpty()) {
+            builder.append('?').append(query.query());
+        }
         return builder.toString();
     }
     
     public String path() {
-        return uri.getPath();
+        return uri.getPath().isEmpty() ? "/" : uri.getPath();
     }
     
     public Query query() {
@@ -58,7 +61,7 @@ public class RequestInfo {
     }
     
     public String dateAsString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MM yyyy HH:mm:ss");
-        return (dateFormat.format(options.date()) + " GMT").toUpperCase();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+        return (dateFormat.format(options.date()) + " GMT");
     }
 }

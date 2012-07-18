@@ -69,30 +69,6 @@ public class RequestInfoTest {
         Assert.assertEquals("TUE, 17 07 2012 10:20:30 GMT", actualDate);
     }
     
-    @Test
-    public void queryStringIsEmptyWhenNoQueryGiven() throws URISyntaxException {
-        RequestInfo request = new RequestInfo("http://www.example.com", options);
-        Assert.assertEquals("", request.sortedQuery());
-    }
-    
-    @Test
-    public void queryStringReturnsSingleEntryFromQuery() throws URISyntaxException {
-        RequestInfo request = new RequestInfo("http://www.example.com/test?key=value", options);
-        String actualQuery = request.sortedQuery();
-        Assert.assertEquals("key=value", actualQuery);
-    }
-    
-    @Test
-    public void queryStringsSortsEntries() throws URISyntaxException {
-        RequestInfo request = new RequestInfo("http://www.example.com/test?value=1&temp=2", options);
-        Assert.assertEquals("temp=2&value=1", request.sortedQuery());
-    }
-    
-    @Test
-    public void queryStringsSortsEntriesWithSameKey() throws Exception {
-        RequestInfo request = new RequestInfo("http://www.example.com/test?value=def&value=abc", options);
-        Assert.assertEquals("value=abc&value=def", request.sortedQuery());
-    }
     
     @Test
     public void isNotQueryBasedWithDefaultOption() throws URISyntaxException {

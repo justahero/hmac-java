@@ -3,12 +3,17 @@ package com.asquera.hmac;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 class WardenHMacSigner {
     
@@ -28,47 +33,42 @@ class WardenHMacSigner {
         RequestInfo request = new RequestInfo(url, options);
         String signature = generateSignature(secret, request);
         
-        /*
-        Map<String, Object> options = new HashMap<String, Object>(this.defaultOptions);
-        options.putAll(inputOptions);
+        if (options.isQueryBased()) {
+            
+            List<NameValuePair> auth_params = new ArrayList<NameValuePair>(options.extraAuthParams());
+            auth_params.add(new BasicNameValuePair("date", request.dateAsString()));
+            auth_params.add(new BasicNameValuePair("signature", signature));
+            
+            if (!options.nonce().isEmpty()) {
+                auth_params.add(new BasicNameValuePair("nonce", options.nonce()));
+            }
+            
+            request.query().add(options.authParam(), auth_params);
         
-        RequestInfo request = new RequestInfo(url, options);
-        String signature = generateSignature(secret, request);
-        
-        if (request.isQueryBased()) {
-            Map<String, String> auth_params = new HashMap<String, String>();
+        } else {
+            
+            List<NameValuePair> headers = new ArrayList<NameValuePair>();
+            
+            Map<String, String> map = new HashMap<String, String>();
+            for (NameValuePair pair : options.extraAuthParams()) {
+                map.put(pair.getName(), pair.getValue());
+            }
+            map.put("signature", signature);
+            
+            headers.add(new BasicNameValuePair("auth_header", options.authHeaderFormat(map)));
+            if (!options.nonce().isEmpty()) {
+                headers.add(new BasicNameValuePair("nonce", options.nonce()));
+            }
+            
+            if (options.useAlternateDateHeader()) {
+                headers.add(new BasicNameValuePair(options.alternateDateHeader(), request.dateAsString()));
+            } else {
+                headers.add(new BasicNameValuePair("date", request.dateAsString()));
+            }
         }
-        */
         
         return "";
     }
-/*
-        if ($opts["query_based"]) {
-            $auth_params = array_merge($opts["extra_auth_params"], array(
-                "date" => $date,
-                "signature" => $signature
-            ));
-            
-            if (!empty( $opts["nonce"])) {
-                $auth_params["nonce"] = $opts["nonce"];
-            }
-            
-            $query_values[$opts["auth_param"]] = $auth_params;
-            
-        } else {
-            
-            $headers[$opts["auth_header"]]   = $this->interpolateString($opts["auth_header_format"], array_merge($opts, $opts["extra_auth_params"], array("signature" => $signature)));
-            if (!empty($opts["nonce"])) {
-                $headers[$opts["nonce_header"]]  = $opts["nonce"];
-            }
-            
-            if (!empty($opts["use_alternate_date_header"])) {
-                $headers[$opts["use_alternate_date_header"]] = $date;
-            } else {
-                $headers["Date"] = $date;
-            }
-        }
- */
     
     public String signUrl(final String url, final String secret, final Map<String, Object> options) {
         if (options.containsKey("query_based")) {

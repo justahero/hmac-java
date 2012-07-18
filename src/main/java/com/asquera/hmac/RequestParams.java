@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +35,8 @@ public class RequestParams {
     private boolean isQueryBased = false;
     private boolean useAlternateDateHeader = false;
     
-    private final ArrayList<NameValuePair> headers = new ArrayList<NameValuePair>();
-    private final Map<String, String> extraAuthParams = new HashMap<String, String>();
+    private final List<NameValuePair> headers = new ArrayList<NameValuePair>();
+    private final List<NameValuePair> extraAuthParams = new ArrayList<NameValuePair>();
     
     public RequestParams() {
     }
@@ -99,20 +98,16 @@ public class RequestParams {
         this.authParam = authParam;
     }
     
-    public Map<String, String> extraAuthParams() {
+    public List<NameValuePair> extraAuthParams() {
         return this.extraAuthParams;
     }
     
     public void addExtraAuthParam(String name, String value) {
-        this.extraAuthParams.put(name, value);
+        this.extraAuthParams.add(new BasicNameValuePair(name, value));
     }
     
-    public void addExtraAuthParams(Map<String, String> extraAuthParams) {
-        this.extraAuthParams.putAll(extraAuthParams);
-    }
-    
-    public void clearExtraAuthParams() {
-        this.extraAuthParams.clear();
+    public void addExtraAuthParams(List<NameValuePair> extraAuthParams) {
+        this.extraAuthParams.addAll(extraAuthParams);
     }
     
     public String authHeader() {

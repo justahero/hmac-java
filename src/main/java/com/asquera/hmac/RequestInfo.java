@@ -1,24 +1,19 @@
 package com.asquera.hmac;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 
 public class RequestInfo {
     
     private final static String EOL = System.getProperty("line.separator");
     
     private final RequestParams options;
-    private final String query;
-    private final String path;
+    private final URI uri;
+    private final Query query;
+    private final String urlWithoutQuery;
     
     public RequestInfo(final String url, final RequestParams options) throws URISyntaxException {
         if (url == null)
@@ -26,11 +21,11 @@ public class RequestInfo {
         if (options == null)
             throw new IllegalArgumentException();
         
+        this.uri = new URI(url);
         this.options = options;
+        this.urlWithoutQuery = url.split("\\?")[0];
         
-        URI uri = new URI(url);
-        query = parseQueryStrings(uri);
-        path  = uri.getPath();
+        query = new Query(uri);
     }
     
     public String canonicalRepresentation() {
@@ -41,15 +36,15 @@ public class RequestInfo {
         for (NameValuePair pair : options.headers()) {
             builder.append(pair.getName().toLowerCase()).append(':').append(pair.getValue()).append(EOL);
         }
-        builder.append(path()).append(sortedQuery());
+        builder.append(uri.getPath()).append(query.query());
         return builder.toString();
     }
     
     public String path() {
-        return this.path;
+        return uri.getPath();
     }
     
-    public String sortedQuery() {
+    public Query query() {
         return this.query;
     }
     
@@ -57,26 +52,13 @@ public class RequestInfo {
         return options.isQueryBased();
     }
     
+    public String url() {
+        String fragment = uri.getFragment().isEmpty() ? "" : "#" + uri.getFragment();
+        return String.format("%s?%s%s", urlWithoutQuery, query.encodedQuery(), fragment);
+    }
+    
     public String dateAsString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MM yyyy HH:mm:ss");
         return (dateFormat.format(options.date()) + " GMT").toUpperCase();
-    }
-    
-    private static String parseQueryStrings(URI uri) {
-        String encoding = "UTF-8";
-        List<NameValuePair> queries = URLEncodedUtils.parse(uri, encoding);
-        Collections.sort(queries, new PairComparator());
-        
-        try {
-            List<String> parts = new ArrayList<String>();
-            for (NameValuePair pair : queries) {
-                String decodedName  = URLDecoder.decode(pair.getName(), encoding);
-                String decodedValue = URLDecoder.decode(pair.getValue(), encoding);
-                parts.add(String.format("%s=%s", decodedName, decodedValue));
-            }
-            return Utils.join(parts, "&");
-        } catch (UnsupportedEncodingException e) {
-        }
-        return "";
     }
 }

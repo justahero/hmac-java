@@ -1,6 +1,8 @@
 package com.asquera.hmac;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -69,6 +71,26 @@ public class UtilsTest {
         Assert.assertNotNull(result);
         Assert.assertEquals("X-HMAC-Date", result);
     }
-
+    
+    @Test
+    public void joinsEmptyStringArray() {
+        List<String> strings = new ArrayList<String>();
+        Assert.assertEquals("", Utils.join(strings, "&"));
+    }
+    
+    @Test
+    public void joinArrayWithSingleString() {
+        List<String> strings = new ArrayList<String>();
+        strings.add("test");
+        Assert.assertEquals("test", Utils.join(strings, ";"));
+    }
+    
+    @Test
+    public void joinArrayWithTwoStrings() {
+        List<String> strings = new ArrayList<String>();
+        strings.add("first");
+        strings.add("second");
+        Assert.assertEquals("first&second", Utils.join(strings, "&"));
+    }
 }
 

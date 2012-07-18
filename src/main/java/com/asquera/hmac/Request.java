@@ -56,8 +56,16 @@ public class Request {
     }
     
     public String url() {
-        String fragment = uri.getFragment().isEmpty() ? "" : "#" + uri.getFragment();
-        return String.format("%s?%s%s", urlWithoutQuery, query.encodedQuery(), fragment);
+        String url = "";
+        String query = this.query.encodedQuery();
+        if (query != null && !query.isEmpty()) {
+            url += "?" + query;
+        }
+        url += urlWithoutQuery;
+        if (uri.getFragment() != null && !uri.getFragment().isEmpty()) {
+            url += "#" + uri.getFragment();
+        }
+        return url;
     }
     
     public String dateAsString() {

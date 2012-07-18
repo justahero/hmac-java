@@ -91,6 +91,13 @@ public class RequestTest {
     }
     
     @Test
+    public void returnUrlWithoutQueryParameters() throws URISyntaxException {
+        options.setQueryBased(false);
+        Request request = new Request("http://www.example.com", options);
+        Assert.assertEquals("http://www.example.com", request.url());
+    }
+    
+    @Test
     public void canonicalRepresentationOfDefaultParams() throws URISyntaxException {
         RequestParams options = new RequestParams();
         options.setDate(2012, 06, 18, 19, 14, 20);

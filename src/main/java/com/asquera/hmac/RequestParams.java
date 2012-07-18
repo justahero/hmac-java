@@ -70,10 +70,6 @@ public class RequestParams {
         this.headers.addAll(headers);
     }
     
-    public void clearHeaders() {
-        this.headers.clear();
-    }
-    
     public String method() {
         return this.method.toUpperCase();
     }

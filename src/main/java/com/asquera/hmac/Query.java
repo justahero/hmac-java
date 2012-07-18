@@ -26,7 +26,7 @@ public class Query {
     }
     
     public Query(URI uri) {
-        add(URLEncodedUtils.parse(uri, "UTF-8"));
+        add(URLEncodedUtils.parse(uri, Encoding));
     }
     
     private void add(List<NameValuePair> params) {
@@ -62,7 +62,7 @@ public class Query {
     
     public String encodedQuery() {
         Collections.sort(this.queries, new PairComparator());
-        return URLEncodedUtils.format(this.queries, "UTF-8");
+        return URLEncodedUtils.format(this.queries, Encoding);
     }
 }
 

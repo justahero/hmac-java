@@ -40,7 +40,7 @@ public class RequestInfoTest {
     public void pathFromUrlWithoutQuery() throws URISyntaxException {
         RequestInfo info = new RequestInfo("http://www.example.com", options);
         String actualPath = info.path();
-        Assert.assertEquals("", actualPath);
+        Assert.assertEquals("/", actualPath);
     }
     
     @Test
@@ -66,7 +66,7 @@ public class RequestInfoTest {
         
         RequestInfo request = new RequestInfo("http://example.com", options);
         String actualDate = request.dateAsString();
-        Assert.assertEquals("TUE, 17 07 2012 10:20:30 GMT", actualDate);
+        Assert.assertEquals("Tue, 17 Jul 2012 10:20:30 GMT", actualDate);
     }
     
     
@@ -89,4 +89,54 @@ public class RequestInfoTest {
         RequestInfo request = new RequestInfo("http://www.example.com", options);
         Assert.assertTrue(request.isQueryBased());
     }
+    
+    @Test
+    public void canonicalRepresentationOfDefaultParams() throws URISyntaxException {
+        RequestParams options = new RequestParams();
+        options.setDate(2012, 06, 18, 19, 14, 20);
+        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        
+        String actual = request.canonicalRepresentation();
+        String expected = "GET\ndate:Wed, 18 Jul 2012 19:14:20 GMT\nnonce:\n/";
+        Assert.assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void canonicalRepresentationWithNonce() throws URISyntaxException {
+        RequestParams options = new RequestParams();
+        options.setDate(2011, 05, 20, 12, 6, 11);
+        options.setNonce("TESTNONCE");
+        RequestInfo request = new RequestInfo("/example", options);
+        request.query().add("foo", "bar");
+        request.query().add("baz", "foobared");
+        
+        String actual = request.canonicalRepresentation();
+        String expected = "GET\ndate:Mon, 20 Jun 2011 12:06:11 GMT\nnonce:TESTNONCE\n/example?baz=foobared&foo=bar";
+        Assert.assertEquals(expected, actual);
+    }
+    
+    @Test
+    public void canonicalRepresentationWithHeaders() throws URISyntaxException {
+        RequestParams options = new RequestParams();
+        options.setDate(2011, 05, 20, 12, 06, 11);
+        options.setNonce("TESTNONCE");
+        options.setQueryBased(false);
+        options.addHeader("Content-Type", "application/json;charset=utf8");
+        options.addHeader("Content-MD5", "d41d8cd98f00b204e9800998ecf8427e");
+        
+        RequestInfo request = new RequestInfo("/example", options);
+        request.query().add("foo", "bar");
+        request.query().add("baz", "foobared");
+        
+        String actual = request.canonicalRepresentation();
+        String expected = 
+                "GET\n" +
+                "date:Mon, 20 Jun 2011 12:06:11 GMT\n" +
+                "nonce:TESTNONCE\n" +
+                "content-md5:d41d8cd98f00b204e9800998ecf8427e\n" +
+                "content-type:application/json;charset=utf8\n" +
+                "/example?baz=foobared&foo=bar";
+        Assert.assertEquals(expected, actual);
+    }
 }
+

@@ -27,7 +27,7 @@ class WardenHMacSigner {
         this.algorithm = algorithm;
     }
     
-    public String signRequest(final String url, final String secret, final RequestParams options)
+    public RequestInfo signRequest(final String url, final String secret, final RequestParams options)
             throws URISyntaxException, InvalidKeyException, NoSuchAlgorithmException {
         
         RequestInfo request = new RequestInfo(url, options);
@@ -63,20 +63,19 @@ class WardenHMacSigner {
             if (options.useAlternateDateHeader()) {
                 headers.add(new BasicNameValuePair(options.alternateDateHeader(), request.dateAsString()));
             } else {
-                headers.add(new BasicNameValuePair("date", request.dateAsString()));
+                headers.add(new BasicNameValuePair("Date", request.dateAsString()));
             }
         }
         
-        return "";
+        return request;
     }
     
-    public String signUrl(final String url, final String secret, final Map<String, Object> options) {
-        if (options.containsKey("query_based")) {
-            options.remove("query_based");
-        }
-        options.put("query_based", new Boolean(true));
+    public String signUrl(final String url, final String secret, final RequestParams options)
+            throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
         
-        return "";
+        options.setQueryBased(true);
+        RequestInfo request = signRequest(url, secret, options);
+        return request.url();
     }
     
     protected String generateSignature(final String secret, final RequestInfo request) throws InvalidKeyException, NoSuchAlgorithmException {

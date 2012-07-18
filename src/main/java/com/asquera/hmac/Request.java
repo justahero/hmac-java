@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 
 import org.apache.http.NameValuePair;
 
-public class RequestInfo {
+public class Request {
     
     private final static String EOL = System.getProperty("line.separator");
     
@@ -15,7 +15,7 @@ public class RequestInfo {
     private final Query query;
     private final String urlWithoutQuery;
     
-    public RequestInfo(final String url, final RequestParams options) throws URISyntaxException {
+    public Request(final String url, final RequestParams options) throws URISyntaxException {
         if (url == null)
             throw new IllegalArgumentException();
         if (options == null)

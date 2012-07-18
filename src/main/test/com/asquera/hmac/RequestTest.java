@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RequestInfoTest {
+public class RequestTest {
     
     private RequestParams options;
     
@@ -21,7 +21,7 @@ public class RequestInfoTest {
     @Test
     public void constructorThrowsExceptionWhenMapIsNull() throws URISyntaxException {
         try {
-            new RequestInfo("http://www.example.com", null);
+            new Request("http://www.example.com", null);
             Assert.fail("Must throw exception when map is null");
         } catch (IllegalArgumentException e) {
         }
@@ -30,7 +30,7 @@ public class RequestInfoTest {
     @Test
     public void constructorThrowsExceptionWhenNoUrl() throws URISyntaxException {
         try {
-            new RequestInfo(null, options);
+            new Request(null, options);
             Assert.fail("Must throw exception when url is null");
         } catch (IllegalArgumentException e) {
         }
@@ -38,21 +38,21 @@ public class RequestInfoTest {
     
     @Test
     public void pathFromUrlWithoutQuery() throws URISyntaxException {
-        RequestInfo info = new RequestInfo("http://www.example.com", options);
+        Request info = new Request("http://www.example.com", options);
         String actualPath = info.path();
         Assert.assertEquals("/", actualPath);
     }
     
     @Test
     public void pathFromUrlWithPath() throws URISyntaxException {
-        RequestInfo info = new RequestInfo("http://www.example.com/images/test.png", options);
+        Request info = new Request("http://www.example.com/images/test.png", options);
         String actualPath = info.path();
         Assert.assertEquals("/images/test.png", actualPath);
     }
     
     @Test
     public void pathFromUrlWithQuery() throws URISyntaxException {
-        RequestInfo info = new RequestInfo("http://www.test.com/blog?key=value&test=true", options);
+        Request info = new Request("http://www.test.com/blog?key=value&test=true", options);
         String actualPath = info.path();
         Assert.assertEquals("/blog", actualPath);
     }
@@ -64,7 +64,7 @@ public class RequestInfoTest {
         Date date = calendar.getTime();
         options.setDate(date);
         
-        RequestInfo request = new RequestInfo("http://example.com", options);
+        Request request = new Request("http://example.com", options);
         String actualDate = request.dateAsString();
         Assert.assertEquals("Tue, 17 Jul 2012 10:20:30 GMT", actualDate);
     }
@@ -72,21 +72,21 @@ public class RequestInfoTest {
     
     @Test
     public void isNotQueryBasedWithDefaultOption() throws URISyntaxException {
-        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        Request request = new Request("http://www.example.com", options);
         Assert.assertFalse(request.isQueryBased());
     }
     
     @Test
     public void isNotQueryBasedWhenOptionIsFalse() throws URISyntaxException {
         options.setQueryBased(false);
-        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        Request request = new Request("http://www.example.com", options);
         Assert.assertFalse(request.isQueryBased());
     }
     
     @Test
     public void isQueryBasedWhenOptionIsTrue() throws URISyntaxException {
         options.setQueryBased(true);
-        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        Request request = new Request("http://www.example.com", options);
         Assert.assertTrue(request.isQueryBased());
     }
     
@@ -94,7 +94,7 @@ public class RequestInfoTest {
     public void canonicalRepresentationOfDefaultParams() throws URISyntaxException {
         RequestParams options = new RequestParams();
         options.setDate(2012, 06, 18, 19, 14, 20);
-        RequestInfo request = new RequestInfo("http://www.example.com", options);
+        Request request = new Request("http://www.example.com", options);
         
         String actual = request.canonicalRepresentation();
         String expected = "GET\ndate:Wed, 18 Jul 2012 19:14:20 GMT\nnonce:\n/";
@@ -106,7 +106,7 @@ public class RequestInfoTest {
         RequestParams options = new RequestParams();
         options.setDate(2011, 05, 20, 12, 6, 11);
         options.setNonce("TESTNONCE");
-        RequestInfo request = new RequestInfo("/example", options);
+        Request request = new Request("/example", options);
         request.query().add("foo", "bar");
         request.query().add("baz", "foobared");
         
@@ -124,7 +124,7 @@ public class RequestInfoTest {
         options.addHeader("Content-Type", "application/json;charset=utf8");
         options.addHeader("Content-MD5", "d41d8cd98f00b204e9800998ecf8427e");
         
-        RequestInfo request = new RequestInfo("/example", options);
+        Request request = new Request("/example", options);
         request.query().add("foo", "bar");
         request.query().add("baz", "foobared");
         

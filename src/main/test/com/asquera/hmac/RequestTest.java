@@ -19,7 +19,7 @@ public class RequestTest {
     }
     
     @Test
-    public void constructorThrowsExceptionWhenMapIsNull() throws URISyntaxException {
+    public void constructorThrowsExceptionWhenRequestParamsAreNull() throws URISyntaxException {
         try {
             new Request("http://www.example.com", null);
             Assert.fail("Must throw exception when map is null");

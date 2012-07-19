@@ -56,12 +56,11 @@ public class Request {
     }
     
     public String url() {
-        String url = "";
+        String url = new String(urlWithoutQuery);
         String query = this.query.encodedQuery();
         if (query != null && !query.isEmpty()) {
             url += "?" + query;
         }
-        url += urlWithoutQuery;
         if (uri.getFragment() != null && !uri.getFragment().isEmpty()) {
             url += "#" + uri.getFragment();
         }

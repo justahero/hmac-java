@@ -19,7 +19,7 @@ import org.apache.http.message.BasicNameValuePair;
  * A helper class that provides functions to create signatures for HMac. It is easy to use.
  * 
  */
-class WardenHMacSigner {
+public class WardenHMacSigner {
     
     private final Mac algorithm;
     

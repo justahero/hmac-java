@@ -67,7 +67,7 @@ public class QueryTest {
         list.add(new BasicNameValuePair("signature", "12345678"));
         list.add(new BasicNameValuePair("time", "4444"));
         params.add("auth", list);
-        Assert.assertEquals("auth.signature=12345678&auth.time=4444&terminal=true", params.query());
+        Assert.assertEquals("auth[signature]=12345678&auth[time]=4444&terminal=true", params.query());
     }
 }
 

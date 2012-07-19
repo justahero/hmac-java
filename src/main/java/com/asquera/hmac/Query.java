@@ -41,7 +41,7 @@ public class Query {
     
     public void add(String name, List<NameValuePair> list) {
         for (NameValuePair pair : list) {
-            add(String.format("%s.%s", name, pair.getName()), pair.getValue());
+            add(String.format("%s[%s]", name, pair.getName()), pair.getValue());
         }
     }
     

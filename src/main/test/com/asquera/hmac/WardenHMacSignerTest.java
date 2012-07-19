@@ -2,6 +2,7 @@ package com.asquera.hmac;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -37,8 +38,19 @@ public class WardenHMacSignerTest {
         options.setDate(2012, 06, 19, 14, 36, 10);
         
         String actual = signer.signUrl("http://www.google.com", "SHAREDSECRET", options);
-        String expected = "http://www.google.com?auth.date=Thu%2C+19+Jul+2012+14%3A36%3A10+GMT";
+        String expected = "http://www.google.com?auth%5Bdate%5D=Thu%2C+19+Jul+2012+14%3A36%3A10+GMT";
         Assert.assertTrue(actual.startsWith(expected));
+    }
+    
+    @Test
+    public void signUrlAndDecodeResult() throws Exception {
+        options.setDate(2012, 06, 19, 14, 36, 10);
+        
+        String signedUrl  = signer.signUrl("http://www.google.com", "SHAREDSECRET", options);
+        String encodedUrl = URLDecoder.decode(signedUrl, "UTF-8");
+        String expected   = "http://www.google.com?auth[date]=Thu, 19 Jul 2012 14:36:10 GMT";
+        
+        Assert.assertTrue(encodedUrl.startsWith(expected));
     }
     
     @Test
@@ -68,10 +80,10 @@ public class WardenHMacSignerTest {
         Assert.assertTrue(queries.containsKey("bar"));
         Assert.assertEquals("void", queries.get("bar"));
         
-        Assert.assertTrue(queries.containsKey("auth.date"));
-        Assert.assertEquals("Wed, 18 Jul 2012 15:42:01 GMT", queries.get("auth.date"));
-        Assert.assertTrue(queries.containsKey("auth.nonce"));
-        Assert.assertEquals("TESTNONCE", queries.get("auth.nonce"));
-        Assert.assertTrue(queries.containsKey("auth.date"));
+        Assert.assertTrue(queries.containsKey("auth[date]"));
+        Assert.assertEquals("Wed, 18 Jul 2012 15:42:01 GMT", queries.get("auth[date]"));
+        Assert.assertTrue(queries.containsKey("auth[nonce]"));
+        Assert.assertEquals("TESTNONCE", queries.get("auth[nonce]"));
+        Assert.assertTrue(queries.containsKey("auth[date]"));
      }
 }

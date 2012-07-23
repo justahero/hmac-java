@@ -106,6 +106,22 @@ public class WardenHMacSigner {
      * 
      * @param url     The url to sign
      * @param secret  The shared secret used to sign the url
+     * @return A signed url with the signature as part of the query. 
+     * 
+     * @throws URISyntaxException Thrown when the given url is not not a valid URI.
+     * @throws InvalidKeyException      Thrown when the provided secret key is inappropriate for the hash algorithm
+     * @throws NoSuchAlgorithmException Thrown when the provided Mac algorithm is not supported or cannot be applied.
+     */
+    public String signUrl(final String url, final String secret) throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
+        return signUrl(url, secret, new RequestParams());
+    }
+    
+    /**
+     * Signs a given url for use with query-based authentication. The signature is part of the
+     * url's query.
+     * 
+     * @param url     The url to sign
+     * @param secret  The shared secret used to sign the url
      * @param options Request parameters controlling the signature generation
      * @return A signed url with the signature as part of the query. 
      * 

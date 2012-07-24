@@ -9,7 +9,12 @@ get '/test' do
   h = HMAC::Signer.new('sha1')
   result = h.validate_url_signature(request.url, "TESTSECRET")
 
-  if result == true then
+  signed = h.sign_url('http://localhost:4567/test', 'TESTSECRET')
+
+  puts "signed:  #{signed}"
+  puts "request: #{request.url}"
+
+  if result
     "everything is fine"
   else
     "something is wrong"

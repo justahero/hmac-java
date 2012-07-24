@@ -47,6 +47,7 @@ public class Client {
             System.out.println(response);
             
         } catch (Exception e) {
+            System.out.println("failed to send request");
         }
     }
 }

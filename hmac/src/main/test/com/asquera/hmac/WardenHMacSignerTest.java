@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.Mac;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Assert;
@@ -85,5 +87,24 @@ public class WardenHMacSignerTest {
         Assert.assertTrue(queries.containsKey("auth[nonce]"));
         Assert.assertEquals("TESTNONCE", queries.get("auth[nonce]"));
         Assert.assertTrue(queries.containsKey("auth[date]"));
-     }
+    }
+    
+    @Test
+    public void generateSignatureForRequest() throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
+        String url = "http://example.org?foo=bar&baz=foobar";
+        options.setNonce("TESTNONCE");
+        options.setDate(2011, 05, 20, 12, 06, 11);
+        
+        Mac mac = Mac.getInstance("HmacMD5");
+        WardenHMacSigner md5Signer = new WardenHMacSigner(mac);
+        Request request = md5Signer.signRequest(url, "secret", options);
+
+        Map<String, String> headers = request.headersAsMap();
+        Assert.assertTrue(headers.containsKey("date"));
+        Assert.assertTrue(headers.containsKey("X-HMAC-Nonce"));
+        Assert.assertTrue(headers.containsKey("Authorization"));
+        Assert.assertEquals("Mon, 20 Jun 2011 12:06:11 GMT", headers.get("date"));
+        Assert.assertEquals("TESTNONCE", headers.get("X-HMAC-Nonce"));
+    }
 }
+

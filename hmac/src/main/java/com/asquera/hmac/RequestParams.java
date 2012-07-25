@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,23 @@ public class RequestParams {
     private final List<NameValuePair> extraAuthParams = new ArrayList<NameValuePair>();
     
     public RequestParams() {
+    }
+    
+    public RequestParams(RequestParams options) {
+        date             = new Date(options.date.getTime());
+        nonce            = options.nonce;
+        method           = options.method;
+        authScheme       = options.authScheme;
+        authParam        = options.authParam;
+        authHeader       = options.authHeader;
+        authHeaderFormat = options.authHeaderFormat;
+        isQueryBased     = options.isQueryBased;
+        useAlternateDateHeader = options.useAlternateDateHeader;
+        
+        headers.clear();
+        headers.addAll(options.headers);
+        extraAuthParams.clear();
+        extraAuthParams.addAll(options.extraAuthParams);
     }
     
     public String nonce() {
@@ -122,7 +140,14 @@ public class RequestParams {
     }
     
     public String authHeaderFormat(Map<String, String> replacements) {
-        return Utils.interpolateString(this.authHeaderFormat, replacements);
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("auth_scheme", authScheme());
+        for (NameValuePair pair : extraAuthParams()) {
+            map.put(pair.getName(), pair.getValue());
+        }
+        map.putAll(replacements);
+        
+        return Utils.interpolateString(this.authHeaderFormat, map);
     }
     
     public void setAuthHeaderFormat(String format) {

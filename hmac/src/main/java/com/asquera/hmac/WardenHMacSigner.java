@@ -72,29 +72,25 @@ public class WardenHMacSigner {
             }
             
             request.query().add(options.authParam(), auth_params);
-        
         } else {
             
             List<NameValuePair> headers = new ArrayList<NameValuePair>();
             
             Map<String, String> map = new HashMap<String, String>();
-            for (NameValuePair pair : options.extraAuthParams()) {
-                map.put(pair.getName(), pair.getValue());
-            }
             map.put("signature", signature);
             
-            headers.add(new BasicNameValuePair("auth_header", options.authHeaderFormat(map)));
+            headers.add(new BasicNameValuePair(options.authHeader(), options.authHeaderFormat(map)));
             if (!options.nonce().isEmpty()) {
-                headers.add(new BasicNameValuePair("nonce", options.nonce()));
+                headers.add(new BasicNameValuePair(options.nonceHeader(), options.nonce()));
             }
             
             if (options.useAlternateDateHeader()) {
                 headers.add(new BasicNameValuePair(options.alternateDateHeader(), request.dateAsString()));
             } else {
-                headers.add(new BasicNameValuePair("Date", request.dateAsString()));
+                headers.add(new BasicNameValuePair("date", request.dateAsString()));
             }
             
-            options.addHeaders(headers);
+            request.addHeaders(headers);
         }
         
         return request;

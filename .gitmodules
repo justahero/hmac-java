@@ -1,3 +1,0 @@
-[submodule "authentication"]
-	path = authentication
-	url = git://github.com/justahero/warden-hmac-authentication

@@ -1,6 +1,7 @@
 package com.asquera.web;
 
 import java.io.BufferedReader;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
@@ -18,7 +19,14 @@ import com.asquera.hmac.WardenHMacSigner;
 
 public class Client {
     
-    private final WardenHMacSigner signer;
+    private WardenHMacSigner signer = null;
+    
+    public Client() {
+        try {
+            this.signer = new WardenHMacSigner();
+        } catch (NoSuchAlgorithmException e) {
+        }
+    }
     
     public Client(Mac mac) {
         this.signer = new WardenHMacSigner(mac);

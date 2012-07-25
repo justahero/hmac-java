@@ -18,7 +18,7 @@ public class ClientTest {
     public void setUp() throws NoSuchAlgorithmException {
         client = new Client(Mac.getInstance("HmacMD5"));
     }
-    
+    /*
     @Test(expected=Exception.class)
     public void failsOnWrongPort() throws Exception {
         String signedUrl = client.signUrl("http://localhost:3111", SECRET);
@@ -37,4 +37,5 @@ public class ClientTest {
         String response = client.sendGetRequest(signedUrl);
         Assert.assertEquals("everything is fine", response);
     }
+    */
 }

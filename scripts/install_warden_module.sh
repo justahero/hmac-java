@@ -11,7 +11,7 @@ gem install bundler
 # checkout warden module
 git clone git://github.com/justahero/warden-hmac-authentication.git ../authentication
 # build gem and install it
-cd ../authentication
+cd ../../authentication
 bundle install
 gem build warden-hmac-authentication.gemspec
 gem install warden-hmac-authentication-0.6.2.gem

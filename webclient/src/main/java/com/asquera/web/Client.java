@@ -3,23 +3,38 @@ package com.asquera.web;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 
 import sun.net.www.protocol.http.HttpURLConnection;
 
+import com.asquera.hmac.Request;
 import com.asquera.hmac.RequestParams;
 import com.asquera.hmac.WardenHMacSigner;
 
 public class Client {
     
-    public static String sendGetRequest(String targetUrl) throws Exception {
-        WardenHMacSigner signer = new WardenHMacSigner(Mac.getInstance("HmacSHA1"));
+    private final WardenHMacSigner signer;
+    
+    public Client(Mac mac) {
+        this.signer = new WardenHMacSigner(mac);
+    }
+    
+    public Request signRequest(String message, String secret) throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
         RequestParams options = new RequestParams();
-        String signedUrl = signer.signUrl(targetUrl, "TESTSECRET", options);
-        
-        URL url = new URL(signedUrl);
+        return signer.signRequest(message, secret, options);
+    }
+    
+    public String signUrl(String message, String secret) throws InvalidKeyException, NoSuchAlgorithmException, URISyntaxException {
+        return signer.signUrl(message, secret);
+    }
+    
+    public String sendGetRequest(String targetUrl) throws Exception {
+        URL url = new URL(targetUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         
@@ -41,9 +56,10 @@ public class Client {
     
     public static void main(String[] args) {
         try {
-            String url = "http://localhost:4567/test";
-            String response = sendGetRequest(url);
+            Client client = new Client(Mac.getInstance("HmacMD5"));
+            String signedUrl = client.signUrl("http://localhost:4567/test", "TESTSECRET");
             
+            String response = client.sendGetRequest(signedUrl);
             System.out.println(response);
             
         } catch (Exception e) {

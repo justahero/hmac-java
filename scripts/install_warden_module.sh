@@ -1,6 +1,8 @@
 #!/bin/bash
 currentdir=`pwd`
 
+echo "Install warden module!"
+
 # fail on errors
 set -e
 

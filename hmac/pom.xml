@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.asquera.hmac</groupId>
     <artifactId>WardenHMacSigner</artifactId>
     <version>0.1</version>
@@ -123,25 +122,6 @@
                         <goals>
                             <goal>single</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- lets execute our project exec:java goal -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <id>install-hmac</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>scripts/install_warden_module.sh</executable>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

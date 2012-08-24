@@ -1,6 +1,5 @@
 package com.asquera.hmac;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -9,14 +8,14 @@ import java.util.Map;
 
 import org.apache.http.NameValuePair;
 
+import com.uri.URI;
+
 public class Request {
     
     private final static String EOL = System.getProperty("line.separator");
     
     private final RequestParams options;
     private final URI uri;
-    private final Query query;
-    private final String urlWithoutQuery;
     
     public Request(final String url, final RequestParams options) throws URISyntaxException {
         if (url == null)
@@ -24,11 +23,8 @@ public class Request {
         if (options == null)
             throw new IllegalArgumentException();
         
-        this.uri = new URI(url);
+        this.uri = URI.parse(url);
         this.options = new RequestParams(options);
-        this.urlWithoutQuery = url.split("\\?")[0];
-        
-        query = new Query(uri);
     }
     
     public String canonicalRepresentation() {
@@ -40,34 +36,33 @@ public class Request {
             builder.append(pair.getName().toLowerCase()).append(':').append(pair.getValue()).append(EOL);
         }
         builder.append(path());
-        if (!query.query().isEmpty()) {
-            builder.append('?').append(query.query());
+        
+        String query = uri.sortQuery().query();
+        if (query != null && !query.isEmpty()) {
+            builder.append('?').append(query);
         }
         return builder.toString();
     }
     
-    public String path() {
-        return uri.getPath().isEmpty() ? "/" : uri.getPath();
+    public URI uri() {
+        return this.uri;
     }
     
-    public Query query() {
-        return this.query;
+    public String path() {
+        return (uri.path() == null) ? "/" : uri.path();
+    }
+    
+    public String query() {
+        return uri.query();
     }
     
     public boolean isQueryBased() {
         return options.isQueryBased();
     }
     
-    public String url() {
-        String url = new String(urlWithoutQuery);
-        String query = this.query.encodedQuery();
-        if (query != null && !query.isEmpty()) {
-            url += "?" + query;
-        }
-        if (uri.getFragment() != null && !uri.getFragment().isEmpty()) {
-            url += "#" + uri.getFragment();
-        }
-        return url;
+    public String url() throws URISyntaxException {
+        this.uri.sortQuery();
+        return uri.toASCII();
     }
     
     public String dateAsString() {
@@ -89,5 +84,15 @@ public class Request {
             result.put(pair.getName(), pair.getValue());
         }
         return result;
+    }
+    
+    public void addParam(String name, List<NameValuePair> auth_params) {
+        for (NameValuePair pair : auth_params) {
+            uri.addParam(String.format("%s[%s]", name, pair.getName()), pair.getValue());
+        }
+    }
+    
+    public void addParam(String name, String value) {
+        uri.addParam(name, value);
     }
 }

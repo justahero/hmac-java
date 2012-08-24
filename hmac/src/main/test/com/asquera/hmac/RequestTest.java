@@ -38,8 +38,8 @@ public class RequestTest {
     
     @Test
     public void pathFromUrlWithoutQuery() throws URISyntaxException {
-        Request info = new Request("http://www.example.com", options);
-        String actualPath = info.path();
+        Request request = new Request("http://www.example.com", options);
+        String actualPath = request.path();
         Assert.assertEquals("/", actualPath);
     }
     
@@ -114,8 +114,8 @@ public class RequestTest {
         options.setDate(2011, 05, 20, 12, 6, 11);
         options.setNonce("TESTNONCE");
         Request request = new Request("/example", options);
-        request.query().add("foo", "bar");
-        request.query().add("baz", "foobared");
+        request.addParam("foo", "bar");
+        request.addParam("baz", "foobared");
         
         String actual = request.canonicalRepresentation();
         String expected = "GET\ndate:Mon, 20 Jun 2011 12:06:11 GMT\nnonce:TESTNONCE\n/example?baz=foobared&foo=bar";
@@ -132,8 +132,8 @@ public class RequestTest {
         options.addHeader("Content-MD5", "d41d8cd98f00b204e9800998ecf8427e");
         
         Request request = new Request("/example", options);
-        request.query().add("foo", "bar");
-        request.query().add("baz", "foobared");
+        request.addParam("foo", "bar");
+        request.addParam("baz", "foobared");
         
         String actual = request.canonicalRepresentation();
         String expected = 

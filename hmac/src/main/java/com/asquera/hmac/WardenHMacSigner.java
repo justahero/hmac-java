@@ -71,7 +71,7 @@ public class WardenHMacSigner {
                 auth_params.add(new BasicNameValuePair("nonce", options.nonce()));
             }
             
-            request.query().add(options.authParam(), auth_params);
+            request.addParam(options.authParam(), auth_params);
         } else {
             
             List<NameValuePair> headers = new ArrayList<NameValuePair>();

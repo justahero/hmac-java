@@ -1,9 +1,6 @@
 package com.asquera.hmac;
 
 import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -56,19 +53,6 @@ public class RequestTest {
         String actualPath = info.path();
         Assert.assertEquals("/blog", actualPath);
     }
-    
-    @Test
-    public void dateAsDateGetsFormatted() throws Exception {
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(2012, 06, 17, 10, 20, 30);
-        Date date = calendar.getTime();
-        options.setDate(date);
-        
-        Request request = new Request("http://example.com", options);
-        String actualDate = request.dateAsString();
-        Assert.assertEquals("Tue, 17 Jul 2012 10:20:30 GMT", actualDate);
-    }
-    
     
     @Test
     public void isNotQueryBasedWithDefaultOption() throws URISyntaxException {

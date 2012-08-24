@@ -64,7 +64,7 @@ public class WardenHMacSigner {
         if (options.isQueryBased()) {
             
             List<NameValuePair> auth_params = new ArrayList<NameValuePair>(options.extraAuthParams());
-            auth_params.add(new BasicNameValuePair("date", request.dateAsString()));
+            auth_params.add(new BasicNameValuePair("date", options.dateAsString()));
             auth_params.add(new BasicNameValuePair("signature", signature));
             
             if (!options.nonce().isEmpty()) {
@@ -85,9 +85,9 @@ public class WardenHMacSigner {
             }
             
             if (options.useAlternateDateHeader()) {
-                headers.add(new BasicNameValuePair(options.alternateDateHeader(), request.dateAsString()));
+                headers.add(new BasicNameValuePair(options.alternateDateHeader(), options.dateAsString()));
             } else {
-                headers.add(new BasicNameValuePair("date", request.dateAsString()));
+                headers.add(new BasicNameValuePair("date", options.dateAsString()));
             }
             
             request.addHeaders(headers);

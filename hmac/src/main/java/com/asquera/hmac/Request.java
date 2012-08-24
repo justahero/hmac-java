@@ -1,7 +1,6 @@
 package com.asquera.hmac;
 
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class Request {
     public String canonicalRepresentation() {
         StringBuilder builder = new StringBuilder();
         builder.append(options.method()).append(EOL);
-        builder.append("date:").append(dateAsString()).append(EOL);
+        builder.append("date:").append(options.dateAsString()).append(EOL);
         builder.append("nonce:").append(options.nonce()).append(EOL);
         for (NameValuePair pair : options.headers()) {
             builder.append(pair.getName().toLowerCase()).append(':').append(pair.getValue()).append(EOL);
@@ -64,12 +63,7 @@ public class Request {
         this.uri.sortQuery();
         return uri.toASCII();
     }
-    
-    public String dateAsString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
-        return (dateFormat.format(options.date()) + " GMT");
-    }
-    
+        
     public void addHeaders(List<NameValuePair> headers) {
         this.options.addHeaders(headers);
     }

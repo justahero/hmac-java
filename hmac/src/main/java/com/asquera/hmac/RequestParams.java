@@ -1,5 +1,6 @@
 package com.asquera.hmac;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -73,13 +74,19 @@ public class RequestParams {
         return this.date;
     }
     
+    public String dateAsString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
+        return (dateFormat.format(date()) + " GMT");
+    }
+    
     public void setDate(Date date) {
         this.date = date;
     }
     
     public void setDate(int year, int month, int day, int hours, int minutes, int seconds) {
         Calendar calendar = new GregorianCalendar(year, month, day, hours, minutes, seconds);
-        setDate(calendar.getTime());
+        Date date = calendar.getTime();
+        setDate(date);
     }
     
     public List<NameValuePair> headers() {

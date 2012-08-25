@@ -1,30 +1,16 @@
 package com.asquera.hmac;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-/**
- * Comparator for NameValuePair objects, used for sorting.
- */
-class PairComparator implements Comparator<NameValuePair> {
-    public int compare(final NameValuePair left, final NameValuePair right) {
-        if (left.getName().equalsIgnoreCase(right.getName())) {
-            return left.getValue().compareToIgnoreCase(right.getValue());
-        }
-        return left.getName().compareToIgnoreCase(right.getName());
-    }
-}
+import com.uri.NameValuePair;
 
 public class RequestParams {
     private Date date = new Date();
@@ -39,10 +25,15 @@ public class RequestParams {
     private boolean isQueryBased = false;
     private boolean useAlternateDateHeader = false;
     
-    private final List<NameValuePair> headers = new ArrayList<NameValuePair>();
-    private final List<NameValuePair> extraAuthParams = new ArrayList<NameValuePair>();
+    private final Vector<NameValuePair> headers = new Vector<NameValuePair>();
+    private final Vector<NameValuePair> extraAuthParams = new Vector<NameValuePair>();
     
     public RequestParams() {
+    }
+    
+    public RequestParams(Date date) {
+        this();
+        this.date = date;
     }
     
     public RequestParams(RequestParams options) {
@@ -90,12 +81,12 @@ public class RequestParams {
     }
     
     public List<NameValuePair> headers() {
-        Collections.sort(this.headers, new PairComparator());
+        Collections.sort(this.headers);
         return this.headers;
     }
     
     public void addHeader(String name, String value) {
-        this.headers.add(new BasicNameValuePair(name, value));
+        this.headers.add(new NameValuePair(name, value));
     }
     
     public void addHeaders(List<NameValuePair> headers) {
@@ -131,7 +122,7 @@ public class RequestParams {
     }
     
     public void addExtraAuthParam(String name, String value) {
-        this.extraAuthParams.add(new BasicNameValuePair(name, value));
+        this.extraAuthParams.add(new NameValuePair(name, value));
     }
     
     public void addExtraAuthParams(List<NameValuePair> extraAuthParams) {
@@ -150,7 +141,7 @@ public class RequestParams {
         Map<String, String> map = new HashMap<String, String>();
         map.put("auth_scheme", authScheme());
         for (NameValuePair pair : extraAuthParams()) {
-            map.put(pair.getName(), pair.getValue());
+            map.put(pair.key, pair.value);
         }
         map.putAll(replacements);
         

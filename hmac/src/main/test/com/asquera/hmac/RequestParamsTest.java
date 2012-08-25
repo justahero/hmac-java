@@ -73,5 +73,12 @@ public class RequestParamsTest {
         String actualDate = options.dateAsString();
         Assert.assertEquals("Tue, 17 Jul 2012 10:20:30 GMT", actualDate);
     }
-
+    
+    @Test
+    public void shouldMatchGivenCalendarToDateAsString() {
+        options.setDate(2012, 07, 24, 18, 30, 22);
+        
+        String actualDate = options.dateAsString();
+        Assert.assertEquals("Fri, 24 Aug 2012 18:30:22 GMT", actualDate);
+    }
 }

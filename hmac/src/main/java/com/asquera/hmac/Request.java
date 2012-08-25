@@ -1,12 +1,12 @@
 package com.asquera.hmac;
 
 import java.net.URISyntaxException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.NameValuePair;
-
+import com.uri.NameValuePair;
 import com.uri.URI;
 
 public class Request {
@@ -31,8 +31,8 @@ public class Request {
         builder.append(options.method()).append(EOL);
         builder.append("date:").append(options.dateAsString()).append(EOL);
         builder.append("nonce:").append(options.nonce()).append(EOL);
-        for (NameValuePair pair : options.headers()) {
-            builder.append(pair.getName().toLowerCase()).append(':').append(pair.getValue()).append(EOL);
+        for (com.uri.NameValuePair pair : options.headers()) {
+            builder.append(pair.key.toLowerCase()).append(':').append(pair.value).append(EOL);
         }
         builder.append(path());
         
@@ -75,14 +75,14 @@ public class Request {
     public Map<String, String> headersAsMap() {
         Map<String, String> result = new HashMap<String, String>();
         for (NameValuePair pair : this.options.headers()) {
-            result.put(pair.getName(), pair.getValue());
+            result.put(pair.key, pair.value);
         }
         return result;
     }
     
     public void addParam(String name, List<NameValuePair> auth_params) {
         for (NameValuePair pair : auth_params) {
-            uri.addParam(String.format("%s[%s]", name, pair.getName()), pair.getValue());
+            uri.addParam(String.format("%s[%s]", name, pair.key), pair.value);
         }
     }
     

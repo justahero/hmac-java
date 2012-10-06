@@ -11,7 +11,7 @@
 
   <modules>
     <module>hmac</module>
-    <module>webclient</module>
+    <module>uri</module>
   </modules>
 
 </project>

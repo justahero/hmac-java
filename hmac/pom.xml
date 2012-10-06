@@ -32,6 +32,12 @@
             <artifactId>httpclient</artifactId>
             <version>4.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.uri</groupId>
+            <artifactId>URI</artifactId>
+            <version>0.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>

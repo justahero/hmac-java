@@ -1,19 +1,22 @@
 package com.asquera.hmac;
 
 import java.net.URISyntaxException;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import com.uri.NameValuePair;
 
 /**
  * A helper class that provides functions to create signatures for HMac. It is easy to use.
@@ -22,6 +25,12 @@ import org.apache.http.message.BasicNameValuePair;
 public class WardenHMacSigner {
     
     private final Mac algorithm;
+    
+    public static Date getCurrentGMTTime() {
+        TimeZone timezone = TimeZone.getTimeZone("GMT:00");
+        Calendar calendar = new GregorianCalendar(timezone);
+        return calendar.getTime();
+    }
     
     /**
      * Creates a signer with 'SHA1' as default HMac hash algorithm.
@@ -64,14 +73,14 @@ public class WardenHMacSigner {
         if (options.isQueryBased()) {
             
             List<NameValuePair> auth_params = new ArrayList<NameValuePair>(options.extraAuthParams());
-            auth_params.add(new BasicNameValuePair("date", request.dateAsString()));
-            auth_params.add(new BasicNameValuePair("signature", signature));
+            auth_params.add(new NameValuePair("date", options.dateAsString()));
+            auth_params.add(new NameValuePair("signature", signature));
             
             if (!options.nonce().isEmpty()) {
-                auth_params.add(new BasicNameValuePair("nonce", options.nonce()));
+                auth_params.add(new NameValuePair("nonce", options.nonce()));
             }
             
-            request.query().add(options.authParam(), auth_params);
+            request.addParam(options.authParam(), auth_params);
         } else {
             
             List<NameValuePair> headers = new ArrayList<NameValuePair>();
@@ -79,15 +88,15 @@ public class WardenHMacSigner {
             Map<String, String> map = new HashMap<String, String>();
             map.put("signature", signature);
             
-            headers.add(new BasicNameValuePair(options.authHeader(), options.authHeaderFormat(map)));
+            headers.add(new NameValuePair(options.authHeader(), options.authHeaderFormat(map)));
             if (!options.nonce().isEmpty()) {
-                headers.add(new BasicNameValuePair(options.nonceHeader(), options.nonce()));
+                headers.add(new NameValuePair(options.nonceHeader(), options.nonce()));
             }
             
             if (options.useAlternateDateHeader()) {
-                headers.add(new BasicNameValuePair(options.alternateDateHeader(), request.dateAsString()));
+                headers.add(new NameValuePair(options.alternateDateHeader(), options.dateAsString()));
             } else {
-                headers.add(new BasicNameValuePair("date", request.dateAsString()));
+                headers.add(new NameValuePair("date", options.dateAsString()));
             }
             
             request.addHeaders(headers);
@@ -163,7 +172,15 @@ public class WardenHMacSigner {
         mac.init(keySpec);
         
         byte[] rawHmac = mac.doFinal(message.getBytes()); // the same as OpenSSL::HMAC.hexDigest
-        return Hex.encodeHexString(rawHmac);
+        return getHexString(rawHmac);
+    }
+    
+    private static String getHexString(byte[] bytes) {
+        StringBuffer result = new StringBuffer();
+        for (int i=0; i < bytes.length; i++) {
+            result.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        return result.toString();
     }
 }
 

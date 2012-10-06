@@ -1,19 +1,5 @@
-rvm:
-  - 1.9.2
-
 language: java
-
-#before_install:
-#  - git clone git://github.com/justahero/warden-hmac-authentication.git
-#  - git submodule update --init --recursive
-
-#before_install:
-#  - gem install sinatra
-#  - gem install bundler
-
+script: mvn clean install
 jdk:
   - openjdk6
-
-branches:
-  only:
-    - java_client
+  - oraclejdk7

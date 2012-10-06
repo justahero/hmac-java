@@ -8,17 +8,11 @@
     <artifactId>WardenHMacSigner</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
-    
-    <parent>
-        <groupId>com.asquera</groupId>
-        <artifactId>hmac</artifactId>
-        <version>0.1</version>
-    </parent>
 
     <repositories>
         <repository>
-            <id>uri-snapshots</id>
-            <url>https://github.com/justahero/maven-repository/snapshots</url>
+            <id>URI snapshots</id>
+            <url>https://raw.github.com/justahero/maven-repository/master/snapshots</url>
             <layout>default</layout>
         </repository>
     </repositories>

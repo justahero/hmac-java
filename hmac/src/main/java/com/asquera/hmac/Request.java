@@ -3,6 +3,9 @@ package com.asquera.hmac;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.NameValuePair;
 
@@ -22,7 +25,7 @@ public class Request {
             throw new IllegalArgumentException();
         
         this.uri = new URI(url);
-        this.options = options;
+        this.options = new RequestParams(options);
         this.urlWithoutQuery = url.split("\\?")[0];
         
         query = new Query(uri);
@@ -70,5 +73,21 @@ public class Request {
     public String dateAsString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss");
         return (dateFormat.format(options.date()) + " GMT");
+    }
+    
+    public void addHeaders(List<NameValuePair> headers) {
+        this.options.addHeaders(headers);
+    }
+    
+    public List<NameValuePair> headers() {
+        return this.options.headers();
+    }
+    
+    public Map<String, String> headersAsMap() {
+        Map<String, String> result = new HashMap<String, String>();
+        for (NameValuePair pair : this.options.headers()) {
+            result.put(pair.getName(), pair.getValue());
+        }
+        return result;
     }
 }

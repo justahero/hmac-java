@@ -40,7 +40,7 @@ public class WardenHMacSignerTest {
         options.setDate(2012, 06, 19, 14, 36, 10);
         
         String actual = signer.signUrl("http://www.google.com", "SHAREDSECRET", options);
-        String expected = "http://www.google.com?auth[date]=Thu%2C%2019%20Jul%202012%2014%3A36%3A10%20GMT";
+        String expected = "http://www.google.com?auth%5Bdate%5D=Thu%2C%2019%20Jul%202012%2014%3A36%3A10%20GMT";
         Assert.assertTrue(actual.startsWith(expected));
     }
     
@@ -82,11 +82,11 @@ public class WardenHMacSignerTest {
         Assert.assertTrue(queries.containsKey("bar"));
         Assert.assertEquals("void", queries.get("bar"));
         
-        Assert.assertTrue(queries.containsKey("auth[date]"));
-        Assert.assertEquals("Wed%2C%2018%20Jul%202012%2015%3A42%3A01%20GMT", queries.get("auth[date]"));
-        Assert.assertTrue(queries.containsKey("auth[nonce]"));
-        Assert.assertEquals("TESTNONCE", queries.get("auth[nonce]"));
-        Assert.assertTrue(queries.containsKey("auth[date]"));
+        Assert.assertTrue(queries.containsKey("auth%5Bdate%5D"));
+        Assert.assertEquals("Wed%2C%2018%20Jul%202012%2015%3A42%3A01%20GMT", queries.get("auth%5Bdate%5D"));
+        Assert.assertTrue(queries.containsKey("auth%5Bnonce%5D"));
+        Assert.assertEquals("TESTNONCE", queries.get("auth%5Bnonce%5D"));
+        Assert.assertTrue(queries.containsKey("auth%5Bdate%5D"));
     }
     
     @Test

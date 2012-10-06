@@ -6,8 +6,13 @@ get '/' do
 end
 
 get '/test' do
-  h = HMAC::Signer.new('sha1')
-  result = h.validate_url_signature(request.url, "TESTSECRET")
+  puts "request: #{request.url}"
+
+  signer = HMAC::Signer.new("md5")
+  result = signer.validate_url_signature(request.url, "TESTSECRET")
+
+  #url = signer.sign_url("/test", "secret", :date => "Fri, 24 Aug 2012 14:44:15 GMT")
+  #puts "signed:  #{url}"
 
   if result
     "everything is fine"

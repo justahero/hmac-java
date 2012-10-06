@@ -1,9 +1,6 @@
 package com.asquera.hmac;
 
 import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,8 +35,8 @@ public class RequestTest {
     
     @Test
     public void pathFromUrlWithoutQuery() throws URISyntaxException {
-        Request info = new Request("http://www.example.com", options);
-        String actualPath = info.path();
+        Request request = new Request("http://www.example.com", options);
+        String actualPath = request.path();
         Assert.assertEquals("/", actualPath);
     }
     
@@ -56,19 +53,6 @@ public class RequestTest {
         String actualPath = info.path();
         Assert.assertEquals("/blog", actualPath);
     }
-    
-    @Test
-    public void dateAsDateGetsFormatted() throws Exception {
-        Calendar calendar = new GregorianCalendar();
-        calendar.set(2012, 06, 17, 10, 20, 30);
-        Date date = calendar.getTime();
-        options.setDate(date);
-        
-        Request request = new Request("http://example.com", options);
-        String actualDate = request.dateAsString();
-        Assert.assertEquals("Tue, 17 Jul 2012 10:20:30 GMT", actualDate);
-    }
-    
     
     @Test
     public void isNotQueryBasedWithDefaultOption() throws URISyntaxException {
@@ -114,8 +98,8 @@ public class RequestTest {
         options.setDate(2011, 05, 20, 12, 6, 11);
         options.setNonce("TESTNONCE");
         Request request = new Request("/example", options);
-        request.query().add("foo", "bar");
-        request.query().add("baz", "foobared");
+        request.addParam("foo", "bar");
+        request.addParam("baz", "foobared");
         
         String actual = request.canonicalRepresentation();
         String expected = "GET\ndate:Mon, 20 Jun 2011 12:06:11 GMT\nnonce:TESTNONCE\n/example?baz=foobared&foo=bar";
@@ -132,8 +116,8 @@ public class RequestTest {
         options.addHeader("Content-MD5", "d41d8cd98f00b204e9800998ecf8427e");
         
         Request request = new Request("/example", options);
-        request.query().add("foo", "bar");
-        request.query().add("baz", "foobared");
+        request.addParam("foo", "bar");
+        request.addParam("baz", "foobared");
         
         String actual = request.canonicalRepresentation();
         String expected = 

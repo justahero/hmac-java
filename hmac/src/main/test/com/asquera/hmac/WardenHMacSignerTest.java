@@ -1,6 +1,5 @@
 package com.asquera.hmac;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.security.InvalidKeyException;
@@ -11,11 +10,12 @@ import java.util.Map;
 
 import javax.crypto.Mac;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.uri.NameValuePair;
+import com.uri.URI;
 
 public class WardenHMacSignerTest {
     WardenHMacSigner signer;
@@ -30,7 +30,7 @@ public class WardenHMacSignerTest {
     private Map<String, String> toMap(List<NameValuePair> list) {
         Map<String, String> result = new HashMap<String, String>();
         for (NameValuePair pair : list) {
-            result.put(pair.getName(), pair.getValue());
+            result.put(pair.key, pair.value);
         }
         return result;
     }
@@ -40,7 +40,7 @@ public class WardenHMacSignerTest {
         options.setDate(2012, 06, 19, 14, 36, 10);
         
         String actual = signer.signUrl("http://www.google.com", "SHAREDSECRET", options);
-        String expected = "http://www.google.com?auth%5Bdate%5D=Thu%2C+19+Jul+2012+14%3A36%3A10+GMT";
+        String expected = "http://www.google.com?auth[date]=Thu%2C%2019%20Jul%202012%2014%3A36%3A10%20GMT";
         Assert.assertTrue(actual.startsWith(expected));
     }
     
@@ -74,8 +74,8 @@ public class WardenHMacSignerTest {
         
         String signedUrl = signer.signUrl("http://example.org?foo=temp&bar=void", "SHAREDSECRET", options);
         
-        URI uri = new URI(signedUrl);
-        Map<String, String> queries = toMap(URLEncodedUtils.parse(uri, "UTF-8"));
+        URI uri = URI.parse(signedUrl).sortQuery();
+        Map<String, String> queries = toMap(uri.queries());
         
         Assert.assertTrue(queries.containsKey("foo"));
         Assert.assertEquals("temp", queries.get("foo"));
@@ -83,7 +83,7 @@ public class WardenHMacSignerTest {
         Assert.assertEquals("void", queries.get("bar"));
         
         Assert.assertTrue(queries.containsKey("auth[date]"));
-        Assert.assertEquals("Wed, 18 Jul 2012 15:42:01 GMT", queries.get("auth[date]"));
+        Assert.assertEquals("Wed%2C%2018%20Jul%202012%2015%3A42%3A01%20GMT", queries.get("auth[date]"));
         Assert.assertTrue(queries.containsKey("auth[nonce]"));
         Assert.assertEquals("TESTNONCE", queries.get("auth[nonce]"));
         Assert.assertTrue(queries.containsKey("auth[date]"));

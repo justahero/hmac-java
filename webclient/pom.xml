@@ -21,12 +21,19 @@
             <artifactId>WardenHMacSigner</artifactId>
             <version>0.1</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <directory>target</directory>
         <outputDirectory>target/classes</outputDirectory>
         <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/main/test</testSourceDirectory>
 
         <plugins>
             <!-- lets force java 1.6 version for this project -->
@@ -112,15 +119,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- lets execute our project exec:java goal -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2</version>
-                <configuration>
-                </configuration>
             </plugin>
 
             <plugin>

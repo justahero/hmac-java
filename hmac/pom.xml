@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.asquera.hmac</groupId>
     <artifactId>WardenHMacSigner</artifactId>
     <version>0.1</version>
@@ -125,15 +124,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- lets execute our project exec:java goal -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2</version>
-                <configuration>
-                </configuration>
             </plugin>
 
             <plugin>

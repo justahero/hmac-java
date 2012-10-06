@@ -8,12 +8,6 @@
     <artifactId>WardenHMacSigner</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
-    
-    <parent>
-        <groupId>com.asquera</groupId>
-        <artifactId>hmac</artifactId>
-        <version>0.1</version>
-    </parent>
 
     <repositories>
         <repository>
